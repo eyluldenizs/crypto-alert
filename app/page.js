@@ -1,0 +1,391 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore";
+import { db } from "../lib/firebase";
+
+const coins = [
+  { id: "bitcoin", name: "Bitcoin", symbol: "BTC" },
+  { id: "ethereum", name: "Ethereum", symbol: "ETH" },
+  { id: "solana", name: "Solana", symbol: "SOL" },
+  { id: "ripple", name: "XRP", symbol: "XRP" },
+  { id: "cardano", name: "Cardano", symbol: "ADA" },
+  { id: "dogecoin", name: "Dogecoin", symbol: "DOGE" },
+  { id: "avalanche-2", name: "Avalanche", symbol: "AVAX" },
+  { id: "polkadot", name: "Polkadot", symbol: "DOT" },
+  { id: "chainlink", name: "Chainlink", symbol: "LINK" },
+  { id: "tron", name: "TRON", symbol: "TRX" },
+];
+
+const directions = {
+  above: "Üstüne çıkarsa",
+  below: "Altına inerse",
+};
+
+const statuses = {
+  pending: "Beklemede",
+  triggered: "Tetiklendi",
+};
+
+export default function Home() {
+  const [telegramStatus, setTelegramStatus] = useState("");
+  const [prices, setPrices] = useState([]);
+  const [pricesStatus, setPricesStatus] = useState("loading");
+  const [pricesError, setPricesError] = useState("");
+
+  const [selectedCoin, setSelectedCoin] = useState("bitcoin");
+  const [threshold, setThreshold] = useState("");
+  const [direction, setDirection] = useState("above");
+  const [rules, setRules] = useState([]);
+  const [rulesStatus, setRulesStatus] = useState("loading");
+  const [rulesError, setRulesError] = useState("");
+  const [formStatus, setFormStatus] = useState("");
+
+  async function sendTelegramMessage() {
+    setTelegramStatus("Gönderiliyor...");
+
+    try {
+      const response = await fetch("/api/telegram-test", {
+        method: "POST",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setTelegramStatus(data.error || "Mesaj gönderilemedi.");
+        return;
+      }
+
+      setTelegramStatus("Telegram mesajı gönderildi.");
+    } catch (error) {
+      setTelegramStatus("Bir hata oluştu.");
+    }
+  }
+
+  async function fetchPrices() {
+    setPricesStatus("loading");
+    setPricesError("");
+
+    try {
+      const response = await fetch("/api/prices");
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        setPricesStatus("error");
+        setPricesError(data.error || "Fiyatlar alınamadı.");
+        return;
+      }
+
+      setPrices(data.prices);
+      setPricesStatus("success");
+    } catch (error) {
+      setPricesStatus("error");
+      setPricesError("Fiyatlar alınırken bir hata oluştu.");
+    }
+  }
+
+  async function addAlertRule(event) {
+    event.preventDefault();
+
+    const numericThreshold = Number(threshold);
+
+    if (!Number.isFinite(numericThreshold) || numericThreshold <= 0) {
+      setFormStatus("Geçerli bir eşik değer gir.");
+      return;
+    }
+
+    setFormStatus("Kural ekleniyor...");
+
+    try {
+      await addDoc(collection(db, "alertRules"), {
+        coin: selectedCoin,
+        threshold: numericThreshold,
+        direction,
+        status: "pending",
+        createdAt: serverTimestamp(),
+      });
+
+      setThreshold("");
+      setFormStatus("Kural eklendi.");
+    } catch (error) {
+      setFormStatus("Kural eklenemedi.");
+    }
+  }
+
+  async function deleteAlertRule(ruleId) {
+    try {
+      await deleteDoc(doc(db, "alertRules", ruleId));
+    } catch (error) {
+      setRulesError("Kural silinemedi.");
+    }
+  }
+
+  useEffect(() => {
+    fetchPrices();
+  }, []);
+
+  useEffect(() => {
+    const rulesQuery = query(
+      collection(db, "alertRules"),
+      orderBy("createdAt", "desc"),
+    );
+
+    const unsubscribe = onSnapshot(
+      rulesQuery,
+      (snapshot) => {
+        const nextRules = snapshot.docs.map((document) => ({
+          id: document.id,
+          ...document.data(),
+        }));
+
+        setRules(nextRules);
+        setRulesStatus("success");
+      },
+      () => {
+        setRulesStatus("error");
+        setRulesError("Kurallar alınamadı.");
+      },
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <main style={{ padding: 32, fontFamily: "Arial, sans-serif" }}>
+      <h1>Crypto Alert</h1>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 1fr) minmax(320px, 420px)",
+          gap: 24,
+          alignItems: "start",
+        }}
+      >
+        <div style={{ display: "grid", gap: 24 }}>
+          <section style={{ marginBottom: 32 }}>
+            <h2>Telegram Test</h2>
+
+            <button
+              onClick={sendTelegramMessage}
+              style={{
+                padding: "12px 18px",
+                cursor: "pointer",
+                border: "1px solid #222",
+                background: "#fff",
+              }}
+            >
+              Telegram test mesajı gönder
+            </button>
+
+            {telegramStatus && <p>{telegramStatus}</p>}
+          </section>
+
+          <section>
+            <h2>Canlı Fiyatlar</h2>
+
+            <button
+              onClick={fetchPrices}
+              disabled={pricesStatus === "loading"}
+              style={{
+                padding: "10px 16px",
+                cursor: pricesStatus === "loading" ? "not-allowed" : "pointer",
+                border: "1px solid #222",
+                background: "#fff",
+                marginBottom: 16,
+              }}
+            >
+              {pricesStatus === "loading"
+                ? "Yükleniyor..."
+                : "Fiyatları yenile"}
+            </button>
+
+            {pricesStatus === "loading" && <p>Fiyatlar yükleniyor...</p>}
+
+            {pricesStatus === "error" && (
+              <p style={{ color: "crimson" }}>{pricesError}</p>
+            )}
+
+            {pricesStatus === "success" && (
+              <div style={{ display: "grid", gap: 12, maxWidth: 420 }}>
+                {prices.map((coin) => (
+                  <div
+                    key={coin.id}
+                    style={{
+                      border: "1px solid #ddd",
+                      padding: 16,
+                    }}
+                  >
+                    <strong>
+                      {coin.name} ({coin.symbol})
+                    </strong>
+
+                    <p style={{ marginBottom: 0 }}>
+                      ${coin.priceUsd.toLocaleString("en-US")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+
+        <div>
+          <section
+            style={{
+              border: "1px solid #ddd",
+              padding: 20,
+              borderRadius: 8,
+            }}
+          >
+            <h2>Uyarı Kuralları</h2>
+
+            <form
+              onSubmit={addAlertRule}
+              style={{
+                display: "grid",
+                gap: 12,
+                width: "100%",
+                marginBottom: 24,
+              }}
+            >
+              <label>
+                Coin
+                <select
+                  value={selectedCoin}
+                  onChange={(event) => setSelectedCoin(event.target.value)}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    boxSizing: "border-box",
+                    padding: 10,
+                    marginTop: 6,
+                  }}
+                >
+                  {coins.map((coin) => (
+                    <option key={coin.id} value={coin.id}>
+                      {coin.name} ({coin.symbol})
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                Eşik değer
+                <input
+                  value={threshold}
+                  onChange={(event) => setThreshold(event.target.value)}
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="Örn: 70000"
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    boxSizing: "border-box",
+                    padding: 10,
+                    marginTop: 6,
+                  }}
+                />
+              </label>
+
+              <label>
+                Yön
+                <select
+                  value={direction}
+                  onChange={(event) => setDirection(event.target.value)}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    boxSizing: "border-box",
+                    padding: 10,
+                    marginTop: 6,
+                  }}
+                >
+                  <option value="above">Üstüne çıkarsa</option>
+                  <option value="below">Altına inerse</option>
+                </select>
+              </label>
+
+              <button
+                type="submit"
+                style={{
+                  width: "100%",
+                  boxSizing: "border-box",
+                  padding: "12px 18px",
+                  cursor: "pointer",
+                  border: "1px solid #222",
+                  background: "#fff",
+                }}
+              >
+                Kural ekle
+              </button>
+
+              {formStatus && <p>{formStatus}</p>}
+            </form>
+
+            {rulesStatus === "loading" && <p>Kurallar yükleniyor...</p>}
+
+            {rulesStatus === "error" && (
+              <p style={{ color: "crimson" }}>{rulesError}</p>
+            )}
+
+            {rulesStatus === "success" && rules.length === 0 && (
+              <p>Henüz uyarı kuralı yok.</p>
+            )}
+
+            {rulesStatus === "success" && rules.length > 0 && (
+              <div style={{ display: "grid", gap: 12, maxWidth: 640 }}>
+                {rules.map((rule) => {
+                  const coin = coins.find((item) => item.id === rule.coin);
+
+                  return (
+                    <div
+                      key={rule.id}
+                      style={{
+                        border: "1px solid #ddd",
+                        padding: 16,
+                      }}
+                    >
+                      <strong>
+                        {coin?.name || rule.coin} ({coin?.symbol || rule.coin})
+                      </strong>
+
+                      <p>
+                        {directions[rule.direction]}: $
+                        {Number(rule.threshold).toLocaleString("en-US")}
+                      </p>
+
+                      <p>Durum: {statuses[rule.status] || rule.status}</p>
+
+                      <button
+                        onClick={() => deleteAlertRule(rule.id)}
+                        style={{
+                          padding: "8px 12px",
+                          cursor: "pointer",
+                          border: "1px solid crimson",
+                          color: "crimson",
+                          background: "#fff",
+                        }}
+                      >
+                        Sil
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
+    </main>
+  );
+}
