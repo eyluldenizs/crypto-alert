@@ -157,3 +157,10 @@ export async function POST() {
 export async function GET() {
   return POST();
 }
+export async function HEAD() {
+  await POST();
+
+  return new Response(null, {
+    status: 200,
+  });
+}
