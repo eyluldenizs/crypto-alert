@@ -229,7 +229,9 @@ export default function Home() {
                     </strong>
 
                     <p style={{ marginBottom: 0 }}>
-                      ${coin.priceUsd.toLocaleString("en-US")}
+                      {coin.type === "currency" || coin.type === "metal"
+                        ? `${coin.priceUsd.toLocaleString("tr-TR")} TL`
+                        : `$${coin.priceUsd.toLocaleString("en-US")}`}
                     </p>
                   </div>
                 ))}
