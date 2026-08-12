@@ -1,0 +1,56 @@
+.main {
+  min-height: 100vh;
+  padding: 32px;
+  font-family: Arial, sans-serif;
+  background: #f8fafc;
+  color: #111827;
+}
+
+.title {
+  margin: 0 0 28px;
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 24px;
+  align-items: start;
+}
+
+.leftColumn {
+  display: grid;
+  gap: 24px;
+}
+
+.section {
+  display: grid;
+  gap: 16px;
+}
+
+.formPanel {
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  padding: 20px;
+  background: #ffffff;
+}
+
+.formPanel h2,
+.section h2 {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .main {
+    padding: 20px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+}

@@ -12,7 +12,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-
+import styles from "./page.module.css";
 import { db } from "../lib/firebase";
 import Button from "../components/Button";
 import StatusMessage from "../components/StatusMessage";
@@ -153,18 +153,11 @@ export default function Home() {
   }, []);
 
   return (
-    <main style={{ padding: 32, fontFamily: "Arial, sans-serif" }}>
-      <h1>Crypto Alert</h1>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0, 1fr) minmax(320px, 420px)",
-          gap: 24,
-          alignItems: "start",
-        }}
-      >
-        <div style={{ display: "grid", gap: 24 }}>
-          <section style={{ marginBottom: 32 }}>
+    <main className={styles.main}>
+      <h1 className={styles.title}>Crypto Alert</h1>
+      <div className={styles.layout}>
+        <div className={styles.leftColumn}>
+          <section className={styles.section}>
             <h2>Telegram Test</h2>
 
             <Button onClick={sendTelegramMessage}>
@@ -174,7 +167,7 @@ export default function Home() {
             <StatusMessage>{telegramStatus}</StatusMessage>
           </section>
 
-          <section>
+          <section className={styles.section}>
             <h2>Canlı Fiyatlar</h2>
 
             <Button onClick={fetchPrices} disabled={pricesStatus === "loading"}>
@@ -196,13 +189,7 @@ export default function Home() {
         </div>
 
         <div>
-          <section
-            style={{
-              border: "1px solid #ddd",
-              padding: 20,
-              borderRadius: 8,
-            }}
-          >
+          <section className={styles.formPanel}>
             <h2>Uyarı Kuralları</h2>
 
             <AlertRuleForm
