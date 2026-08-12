@@ -19,3 +19,11 @@
   border-radius: 6px;
   font: inherit;
 }
+.invalidInput {
+  border-color: #dc2626;
+}
+
+.errorText {
+  color: #dc2626;
+  font-size: 13px;
+}

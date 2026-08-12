@@ -13,6 +13,17 @@ export default function AlertRuleForm({
   onDirectionChange,
   onSubmit,
 }) {
+  const trimmedThreshold = threshold.trim();
+  const numericThreshold = Number(threshold);
+
+  const thresholdError =
+    trimmedThreshold.length === 0
+      ? "Bu alan zorunludur."
+      : !Number.isFinite(numericThreshold) || numericThreshold <= 0
+        ? "Eşik değer 0'dan büyük olmalıdır."
+        : "";
+
+  const isSubmitDisabled = thresholdError.length > 0;
   return (
     <form onSubmit={onSubmit} className={styles.form}>
       <label className={styles.field}>
@@ -32,6 +43,7 @@ export default function AlertRuleForm({
       <label className={styles.field}>
         Eşik değer
         <input
+          className={thresholdError ? styles.invalidInput : ""}
           value={threshold}
           onChange={(event) => onThresholdChange(event.target.value)}
           type="number"
@@ -39,6 +51,9 @@ export default function AlertRuleForm({
           step="any"
           placeholder="Örn: 70000"
         />
+        {thresholdError && (
+          <span className={styles.errorText}>{thresholdError}</span>
+        )}
       </label>
 
       <label className={styles.field}>
@@ -52,7 +67,7 @@ export default function AlertRuleForm({
         </select>
       </label>
 
-      <Button type="submit" variant="fullWidth">
+      <Button type="submit" variant="fullWidth" disabled={isSubmitDisabled}>
         Kural ekle
       </Button>
 
