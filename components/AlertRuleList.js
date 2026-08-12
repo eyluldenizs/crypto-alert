@@ -9,6 +9,7 @@ export default function AlertRuleList({
   rulesStatus,
   rulesError,
   onDeleteRule,
+  onEditRule,
 }) {
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -75,6 +76,7 @@ export default function AlertRuleList({
                 </p>
 
                 <p>Durum: {statusLabels[rule.status] || rule.status}</p>
+                <Button onClick={() => onEditRule(rule)}>Düzenle</Button>
 
                 <Button onClick={() => onDeleteRule(rule.id)} variant="danger">
                   Sil

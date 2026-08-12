@@ -10,13 +10,16 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
+
 import { db } from "../lib/firebase";
 import Button from "../components/Button";
 import StatusMessage from "../components/StatusMessage";
 import PriceList from "../components/PriceList";
 import AlertRuleForm from "../components/AlertRuleForm";
 import AlertRuleList from "../components/AlertRuleList";
+import EditAlertRuleModal from "../components/EditAlertRuleModal";
 
 export default function Home() {
   const [telegramStatus, setTelegramStatus] = useState("");
@@ -31,6 +34,7 @@ export default function Home() {
   const [rulesStatus, setRulesStatus] = useState("loading");
   const [rulesError, setRulesError] = useState("");
   const [formStatus, setFormStatus] = useState("");
+  const [editingRule, setEditingRule] = useState(null);
 
   async function sendTelegramMessage() {
     setTelegramStatus("Gönderiliyor...");
@@ -109,6 +113,13 @@ export default function Home() {
     } catch (error) {
       setRulesError("Kural silinemedi.");
     }
+  }
+
+  async function updateAlertRule(ruleId, updates) {
+    await updateDoc(doc(db, "alertRules", ruleId), {
+      ...updates,
+      status: "pending",
+    });
   }
 
   useEffect(() => {
@@ -210,10 +221,16 @@ export default function Home() {
               rulesStatus={rulesStatus}
               rulesError={rulesError}
               onDeleteRule={deleteAlertRule}
+              onEditRule={setEditingRule}
             />
           </section>
         </div>
       </div>
+      <EditAlertRuleModal
+        rule={editingRule}
+        onClose={() => setEditingRule(null)}
+        onSave={updateAlertRule}
+      />
     </main>
   );
 }
