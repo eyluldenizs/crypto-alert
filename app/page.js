@@ -12,14 +12,10 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
-import {
-  alertAssets,
-  directionLabels,
-  formatAssetPrice,
-  statusLabels,
-} from "../lib/constants";
+import { alertAssets, directionLabels, statusLabels } from "../lib/constants";
 import Button from "../components/Button";
 import StatusMessage from "../components/StatusMessage";
+import PriceList from "../components/PriceList";
 
 export default function Home() {
   const [telegramStatus, setTelegramStatus] = useState("");
@@ -183,25 +179,7 @@ export default function Home() {
               <StatusMessage type="error">{pricesError}</StatusMessage>
             )}
 
-            {pricesStatus === "success" && (
-              <div style={{ display: "grid", gap: 12, maxWidth: 420 }}>
-                {prices.map((coin) => (
-                  <div
-                    key={coin.id}
-                    style={{
-                      border: "1px solid #ddd",
-                      padding: 16,
-                    }}
-                  >
-                    <strong>
-                      {coin.name} ({coin.symbol})
-                    </strong>
-
-                    <p style={{ marginBottom: 0 }}>{formatAssetPrice(coin)}</p>
-                  </div>
-                ))}
-              </div>
-            )}
+            {pricesStatus === "success" && <PriceList prices={prices} />}
           </section>
         </div>
 
