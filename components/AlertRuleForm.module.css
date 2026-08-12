@@ -1,0 +1,21 @@
+.form {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field select,
+.field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #888888;
+  border-radius: 6px;
+  font: inherit;
+}

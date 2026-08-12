@@ -16,6 +16,7 @@ import { alertAssets, directionLabels, statusLabels } from "../lib/constants";
 import Button from "../components/Button";
 import StatusMessage from "../components/StatusMessage";
 import PriceList from "../components/PriceList";
+import AlertRuleForm from "../components/AlertRuleForm";
 
 export default function Home() {
   const [telegramStatus, setTelegramStatus] = useState("");
@@ -193,79 +194,16 @@ export default function Home() {
           >
             <h2>Uyarı Kuralları</h2>
 
-            <form
+            <AlertRuleForm
+              selectedCoin={selectedCoin}
+              threshold={threshold}
+              direction={direction}
+              formStatus={formStatus}
+              onSelectedCoinChange={setSelectedCoin}
+              onThresholdChange={setThreshold}
+              onDirectionChange={setDirection}
               onSubmit={addAlertRule}
-              style={{
-                display: "grid",
-                gap: 12,
-                width: "100%",
-                marginBottom: 24,
-              }}
-            >
-              <label>
-                Coin
-                <select
-                  value={selectedCoin}
-                  onChange={(event) => setSelectedCoin(event.target.value)}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    boxSizing: "border-box",
-                    padding: 10,
-                    marginTop: 6,
-                  }}
-                >
-                  {alertAssets.map((coin) => (
-                    <option key={coin.id} value={coin.id}>
-                      {coin.name} ({coin.symbol})
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label>
-                Eşik değer
-                <input
-                  value={threshold}
-                  onChange={(event) => setThreshold(event.target.value)}
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="Örn: 70000"
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    boxSizing: "border-box",
-                    padding: 10,
-                    marginTop: 6,
-                  }}
-                />
-              </label>
-
-              <label>
-                Yön
-                <select
-                  value={direction}
-                  onChange={(event) => setDirection(event.target.value)}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    boxSizing: "border-box",
-                    padding: 10,
-                    marginTop: 6,
-                  }}
-                >
-                  <option value="above">Üstüne çıkarsa</option>
-                  <option value="below">Altına inerse</option>
-                </select>
-              </label>
-
-              <Button type="submit" variant="fullWidth">
-                Kural ekle
-              </Button>
-
-              <StatusMessage>{formStatus}</StatusMessage>
-            </form>
+            />
 
             {rulesStatus === "loading" && (
               <StatusMessage>Kurallar yükleniyor...</StatusMessage>
