@@ -12,29 +12,12 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
-
-const coins = [
-  { id: "bitcoin", name: "Bitcoin", symbol: "BTC" },
-  { id: "ethereum", name: "Ethereum", symbol: "ETH" },
-  { id: "solana", name: "Solana", symbol: "SOL" },
-  { id: "ripple", name: "XRP", symbol: "XRP" },
-  { id: "cardano", name: "Cardano", symbol: "ADA" },
-  { id: "dogecoin", name: "Dogecoin", symbol: "DOGE" },
-  { id: "avalanche-2", name: "Avalanche", symbol: "AVAX" },
-  { id: "polkadot", name: "Polkadot", symbol: "DOT" },
-  { id: "chainlink", name: "Chainlink", symbol: "LINK" },
-  { id: "tron", name: "TRON", symbol: "TRX" },
-];
-
-const directions = {
-  above: "Üstüne çıkarsa",
-  below: "Altına inerse",
-};
-
-const statuses = {
-  pending: "Beklemede",
-  triggered: "Tetiklendi",
-};
+import {
+  alertAssets,
+  directionLabels,
+  formatAssetPrice,
+  statusLabels,
+} from "../lib/constants";
 
 export default function Home() {
   const [telegramStatus, setTelegramStatus] = useState("");
@@ -228,11 +211,7 @@ export default function Home() {
                       {coin.name} ({coin.symbol})
                     </strong>
 
-                    <p style={{ marginBottom: 0 }}>
-                      {coin.type === "currency" || coin.type === "metal"
-                        ? `${coin.priceUsd.toLocaleString("tr-TR")} TL`
-                        : `$${coin.priceUsd.toLocaleString("en-US")}`}
-                    </p>
+                    <p style={{ marginBottom: 0 }}>{formatAssetPrice(coin)}</p>
                   </div>
                 ))}
               </div>
@@ -272,7 +251,7 @@ export default function Home() {
                     marginTop: 6,
                   }}
                 >
-                  {coins.map((coin) => (
+                  {alertAssets.map((coin) => (
                     <option key={coin.id} value={coin.id}>
                       {coin.name} ({coin.symbol})
                     </option>
@@ -347,7 +326,9 @@ export default function Home() {
             {rulesStatus === "success" && rules.length > 0 && (
               <div style={{ display: "grid", gap: 12, maxWidth: 640 }}>
                 {rules.map((rule) => {
-                  const coin = coins.find((item) => item.id === rule.coin);
+                  const coin = alertAssets.find(
+                    (item) => item.id === rule.coin,
+                  );
 
                   return (
                     <div
@@ -362,11 +343,11 @@ export default function Home() {
                       </strong>
 
                       <p>
-                        {directions[rule.direction]}: $
+                        {directionLabels[rule.direction]}: $
                         {Number(rule.threshold).toLocaleString("en-US")}
                       </p>
 
-                      <p>Durum: {statuses[rule.status] || rule.status}</p>
+                      <p>Durum: {statusLabels[rule.status] || rule.status}</p>
 
                       <button
                         onClick={() => deleteAlertRule(rule.id)}
