@@ -1,0 +1,17 @@
+.message {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.info {
+  color: #374151;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.success {
+  color: #166534;
+}

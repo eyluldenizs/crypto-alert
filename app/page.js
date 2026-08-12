@@ -19,6 +19,7 @@ import {
   statusLabels,
 } from "../lib/constants";
 import Button from "../components/Button";
+import StatusMessage from "../components/StatusMessage";
 
 export default function Home() {
   const [telegramStatus, setTelegramStatus] = useState("");
@@ -162,7 +163,7 @@ export default function Home() {
               Telegram test mesajı gönder
             </Button>
 
-            {telegramStatus && <p>{telegramStatus}</p>}
+            <StatusMessage>{telegramStatus}</StatusMessage>
           </section>
 
           <section>
@@ -174,10 +175,12 @@ export default function Home() {
                 : "Fiyatları yenile"}
             </Button>
 
-            {pricesStatus === "loading" && <p>Fiyatlar yükleniyor...</p>}
+            {pricesStatus === "loading" && (
+              <StatusMessage>Fiyatlar yükleniyor...</StatusMessage>
+            )}
 
             {pricesStatus === "error" && (
-              <p style={{ color: "crimson" }}>{pricesError}</p>
+              <StatusMessage type="error">{pricesError}</StatusMessage>
             )}
 
             {pricesStatus === "success" && (
@@ -283,17 +286,19 @@ export default function Home() {
                 Kural ekle
               </Button>
 
-              {formStatus && <p>{formStatus}</p>}
+              <StatusMessage>{formStatus}</StatusMessage>
             </form>
 
-            {rulesStatus === "loading" && <p>Kurallar yükleniyor...</p>}
+            {rulesStatus === "loading" && (
+              <StatusMessage>Kurallar yükleniyor...</StatusMessage>
+            )}
 
             {rulesStatus === "error" && (
-              <p style={{ color: "crimson" }}>{rulesError}</p>
+              <StatusMessage type="error">{rulesError}</StatusMessage>
             )}
 
             {rulesStatus === "success" && rules.length === 0 && (
-              <p>Henüz uyarı kuralı yok.</p>
+              <StatusMessage>Henüz uyarı kuralı yok.</StatusMessage>
             )}
 
             {rulesStatus === "success" && rules.length > 0 && (
