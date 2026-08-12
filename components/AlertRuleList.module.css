@@ -1,0 +1,18 @@
+.list {
+  display: grid;
+  gap: 12px;
+  max-width: 640px;
+}
+
+.card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.card p {
+  margin: 0;
+}

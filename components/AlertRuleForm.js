@@ -36,7 +36,7 @@ export default function AlertRuleForm({
           onChange={(event) => onThresholdChange(event.target.value)}
           type="number"
           min="0"
-          step="0.01"
+          step="any"
           placeholder="Örn: 70000"
         />
       </label>

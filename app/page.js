@@ -12,11 +12,11 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
-import { alertAssets, directionLabels, statusLabels } from "../lib/constants";
 import Button from "../components/Button";
 import StatusMessage from "../components/StatusMessage";
 import PriceList from "../components/PriceList";
 import AlertRuleForm from "../components/AlertRuleForm";
+import AlertRuleList from "../components/AlertRuleList";
 
 export default function Home() {
   const [telegramStatus, setTelegramStatus] = useState("");
@@ -205,55 +205,12 @@ export default function Home() {
               onSubmit={addAlertRule}
             />
 
-            {rulesStatus === "loading" && (
-              <StatusMessage>Kurallar yükleniyor...</StatusMessage>
-            )}
-
-            {rulesStatus === "error" && (
-              <StatusMessage type="error">{rulesError}</StatusMessage>
-            )}
-
-            {rulesStatus === "success" && rules.length === 0 && (
-              <StatusMessage>Henüz uyarı kuralı yok.</StatusMessage>
-            )}
-
-            {rulesStatus === "success" && rules.length > 0 && (
-              <div style={{ display: "grid", gap: 12, maxWidth: 640 }}>
-                {rules.map((rule) => {
-                  const coin = alertAssets.find(
-                    (item) => item.id === rule.coin,
-                  );
-
-                  return (
-                    <div
-                      key={rule.id}
-                      style={{
-                        border: "1px solid #ddd",
-                        padding: 16,
-                      }}
-                    >
-                      <strong>
-                        {coin?.name || rule.coin} ({coin?.symbol || rule.coin})
-                      </strong>
-
-                      <p>
-                        {directionLabels[rule.direction]}: $
-                        {Number(rule.threshold).toLocaleString("en-US")}
-                      </p>
-
-                      <p>Durum: {statusLabels[rule.status] || rule.status}</p>
-
-                      <Button
-                        onClick={() => deleteAlertRule(rule.id)}
-                        variant="danger"
-                      >
-                        Sil
-                      </Button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            <AlertRuleList
+              rules={rules}
+              rulesStatus={rulesStatus}
+              rulesError={rulesError}
+              onDeleteRule={deleteAlertRule}
+            />
           </section>
         </div>
       </div>
