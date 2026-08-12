@@ -190,7 +190,7 @@ export default function Home() {
           </section>
         </div>
 
-        <div>
+        <div className={styles.rightColumn}>
           <section className={styles.formPanel}>
             <h2>Uyarı Kuralları</h2>
 

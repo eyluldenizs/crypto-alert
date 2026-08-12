@@ -41,6 +41,11 @@
   margin: 0;
 }
 
+.rightColumn {
+  position: sticky;
+  top: 24px;
+}
+
 @media (max-width: 900px) {
   .main {
     padding: 20px;
@@ -52,5 +57,9 @@
 
   .title {
     font-size: 32px;
+  }
+
+  .rightColumn {
+    position: static;
   }
 }
