@@ -18,6 +18,7 @@ import {
   formatAssetPrice,
   statusLabels,
 } from "../lib/constants";
+import Button from "../components/Button";
 
 export default function Home() {
   const [telegramStatus, setTelegramStatus] = useState("");
@@ -157,17 +158,9 @@ export default function Home() {
           <section style={{ marginBottom: 32 }}>
             <h2>Telegram Test</h2>
 
-            <button
-              onClick={sendTelegramMessage}
-              style={{
-                padding: "12px 18px",
-                cursor: "pointer",
-                border: "1px solid #222",
-                background: "#fff",
-              }}
-            >
+            <Button onClick={sendTelegramMessage}>
               Telegram test mesajı gönder
-            </button>
+            </Button>
 
             {telegramStatus && <p>{telegramStatus}</p>}
           </section>
@@ -175,21 +168,11 @@ export default function Home() {
           <section>
             <h2>Canlı Fiyatlar</h2>
 
-            <button
-              onClick={fetchPrices}
-              disabled={pricesStatus === "loading"}
-              style={{
-                padding: "10px 16px",
-                cursor: pricesStatus === "loading" ? "not-allowed" : "pointer",
-                border: "1px solid #222",
-                background: "#fff",
-                marginBottom: 16,
-              }}
-            >
+            <Button onClick={fetchPrices} disabled={pricesStatus === "loading"}>
               {pricesStatus === "loading"
                 ? "Yükleniyor..."
                 : "Fiyatları yenile"}
-            </button>
+            </Button>
 
             {pricesStatus === "loading" && <p>Fiyatlar yükleniyor...</p>}
 
@@ -296,19 +279,9 @@ export default function Home() {
                 </select>
               </label>
 
-              <button
-                type="submit"
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box",
-                  padding: "12px 18px",
-                  cursor: "pointer",
-                  border: "1px solid #222",
-                  background: "#fff",
-                }}
-              >
+              <Button type="submit" variant="fullWidth">
                 Kural ekle
-              </button>
+              </Button>
 
               {formStatus && <p>{formStatus}</p>}
             </form>
@@ -349,18 +322,12 @@ export default function Home() {
 
                       <p>Durum: {statusLabels[rule.status] || rule.status}</p>
 
-                      <button
+                      <Button
                         onClick={() => deleteAlertRule(rule.id)}
-                        style={{
-                          padding: "8px 12px",
-                          cursor: "pointer",
-                          border: "1px solid crimson",
-                          color: "crimson",
-                          background: "#fff",
-                        }}
+                        variant="danger"
                       >
                         Sil
-                      </button>
+                      </Button>
                     </div>
                   );
                 })}
