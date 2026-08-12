@@ -19,6 +19,7 @@ import StatusMessage from "../components/StatusMessage";
 import PriceList from "../components/PriceList";
 import AlertRuleForm from "../components/AlertRuleForm";
 import AlertRuleList from "../components/AlertRuleList";
+import SummaryStats from "../components/SummaryStats";
 import EditAlertRuleModal from "../components/EditAlertRuleModal";
 
 export default function Home() {
@@ -155,6 +156,7 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <h1 className={styles.title}>Crypto Alert</h1>
+      <SummaryStats prices={prices} rules={rules} />
       <div className={styles.layout}>
         <div className={styles.leftColumn}>
           <section className={styles.section}>
