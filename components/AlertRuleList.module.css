@@ -7,10 +7,11 @@
 .card {
   display: grid;
   gap: 10px;
-  border: 1px solid #dddddd;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
   padding: 16px;
   background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .card p {
@@ -44,4 +45,33 @@
   border-color: #111111 !important;
   background: #111111 !important;
   color: #ffffff;
+}
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pending {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.triggered {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }

@@ -19,6 +19,13 @@
   border-radius: 6px;
   font: inherit;
 }
+.field select:focus,
+.field input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
 .invalidInput {
   border-color: #dc2626;
 }

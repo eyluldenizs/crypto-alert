@@ -75,12 +75,28 @@ export default function AlertRuleList({
                   {Number(rule.threshold).toLocaleString("tr-TR")}
                 </p>
 
-                <p>Durum: {statusLabels[rule.status] || rule.status}</p>
-                <Button onClick={() => onEditRule(rule)}>Düzenle</Button>
+                <div className={styles.metaRow}>
+                  <span
+                    className={`${styles.badge} ${
+                      rule.status === "triggered"
+                        ? styles.triggered
+                        : styles.pending
+                    }`}
+                  >
+                    {statusLabels[rule.status] || rule.status}
+                  </span>
+                </div>
 
-                <Button onClick={() => onDeleteRule(rule.id)} variant="danger">
-                  Sil
-                </Button>
+                <div className={styles.actions}>
+                  <Button onClick={() => onEditRule(rule)}>Düzenle</Button>
+
+                  <Button
+                    onClick={() => onDeleteRule(rule.id)}
+                    variant="danger"
+                  >
+                    Sil
+                  </Button>
+                </div>
               </div>
             );
           })}
