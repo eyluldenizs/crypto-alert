@@ -1,17 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import styles from "./page.module.css";
 import { db } from "../lib/firebase";
 import Button from "../components/Button";
@@ -21,6 +11,11 @@ import AlertRuleForm from "../components/AlertRuleForm";
 import AlertRuleList from "../components/AlertRuleList";
 import SummaryStats from "../components/SummaryStats";
 import EditAlertRuleModal from "../components/EditAlertRuleModal";
+import {
+  createAlertRule,
+  deleteAlertRuleById,
+  updateAlertRuleById,
+} from "../services/alertRuleService";
 
 export default function Home() {
   const [telegramStatus, setTelegramStatus] = useState("");
@@ -93,12 +88,10 @@ export default function Home() {
     setFormStatus("Kural ekleniyor...");
 
     try {
-      await addDoc(collection(db, "alertRules"), {
+      await createAlertRule({
         coin: selectedCoin,
         threshold: numericThreshold,
         direction,
-        status: "pending",
-        createdAt: serverTimestamp(),
       });
 
       setThreshold("");
@@ -110,17 +103,14 @@ export default function Home() {
 
   async function deleteAlertRule(ruleId) {
     try {
-      await deleteDoc(doc(db, "alertRules", ruleId));
+      await deleteAlertRuleById(ruleId);
     } catch (error) {
       setRulesError("Kural silinemedi.");
     }
   }
 
   async function updateAlertRule(ruleId, updates) {
-    await updateDoc(doc(db, "alertRules", ruleId), {
-      ...updates,
-      status: "pending",
-    });
+    await updateAlertRuleById(ruleId, updates);
   }
 
   useEffect(() => {
