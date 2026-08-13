@@ -1,5 +1,5 @@
 "use client";
-
+import { fetchLivePrices } from "../services/priceService";
 import { useEffect, useState } from "react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import styles from "./page.module.css";
@@ -58,16 +58,9 @@ export default function Home() {
     setPricesError("");
 
     try {
-      const response = await fetch("/api/prices");
-      const data = await response.json();
+      const nextPrices = await fetchLivePrices();
 
-      if (!response.ok || !data.ok) {
-        setPricesStatus("error");
-        setPricesError(data.error || "Fiyatlar alınamadı.");
-        return;
-      }
-
-      setPrices(data.prices);
+      setPrices(nextPrices);
       setPricesStatus("success");
     } catch (error) {
       setPricesStatus("error");
