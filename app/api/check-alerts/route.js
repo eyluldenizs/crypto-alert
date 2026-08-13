@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { adminDb } from "../../../lib/firebaseAdmin";
+import { sendTelegramMessage } from "../../../services/telegramService";
 
 const alertRuleSchema = z.object({
   coin: z.string(),
@@ -14,34 +15,6 @@ const coinGeckoResponseSchema = z.record(
     usd: z.number(),
   }),
 );
-
-async function sendTelegramMessage(text) {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-
-  if (!botToken || !chatId) {
-    throw new Error("Telegram token veya chat id eksik.");
-  }
-
-  const response = await fetch(
-    `https://api.telegram.org/bot${botToken}/sendMessage`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text,
-      }),
-    },
-  );
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new Error(data.description || "Telegram mesajı gönderilemedi.");
-  }
-}
 
 function isRuleTriggered(rule, currentPrice) {
   if (rule.direction === "above") {
